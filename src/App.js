@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const title = "React";
 
@@ -48,22 +48,46 @@ const App = () => {
       <h1> Hello {title} </h1>
       <InputWithLabel
         id="search"
-        label="Search"
         value={searchTerm}
         onInputChange={handleSearch}
-      />
+        isFocused={true}
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
       <hr />
       <List list={searchedStories} />
     </div>
   );
 };
 
-const InputWithLabel = ({ id, label, value, type = "text", onInputChange }) => (
-  <>
-    <label htmlFor={id}>{label}</label>&nbsp;
-    <input id={id} type={type} value={value} onChange={onInputChange} />
-  </>
-);
+const InputWithLabel = ({
+  id,
+  value,
+  type = "text",
+  onInputChange,
+  children,
+  isFocused,
+}) => {
+  const inputRef = useRef();
+
+  useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+  return (
+    <>
+      <label htmlFor={id}>{children}</label>&nbsp;
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        value={value}
+        onChange={onInputChange}
+      />
+    </>
+  );
+};
 
 const List = ({ list }) =>
   list.map((item) => <Item key={item.objectID} item={item} />);
